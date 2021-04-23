@@ -1,4 +1,7 @@
-# icecream-cljc
+<h1 align="center">
+  <img src="https://raw.githubusercontent.com/gruns/icecream/master/logo.svg" width="220px" height="370px" alt="icecream">
+</h1>
+
 
 Port of Python's [IceCream](https://github.com/gruns/icecream) to Clojure(Script).
 
