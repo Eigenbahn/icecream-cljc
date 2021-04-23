@@ -1,6 +1,6 @@
 # icecream-cljc
 
-Port of [gruns/icecream](https://github.com/gruns/icecream) to Clojure(Script).
+Port of Python's [IceCream](https://github.com/gruns/icecream) to Clojure(Script).
 
 
 ## Usage
@@ -8,16 +8,30 @@ Port of [gruns/icecream](https://github.com/gruns/icecream) to Clojure(Script).
 ```clojure
 (require '[icecream.icecream :as icecream :refer [ic]])
 
-;; scalars
+```
 
-(ic "hello")
-;; "ic| "hello""
-;; => "hello"
+Works on functions, special forms and macros:
 
-(ic nil)
-;; "ic| nil"
-;; => nil
+```clojure
+;; function
+(ic (+ 1 1))
+;; "ic| (+ 1 1): 2"
+;; => 2
 
+;; special form
+(ic (if true :yes :no))
+;; "ic| (if true :yes :no): :yes"
+;; => :yes
+
+;; macro
+(ic (when true :yes))
+;; "ic| (when true :yes): :yes"
+;; => :yes
+```
+
+Outputs scalars directly:
+
+```clojure
 (ic 1)
 ;; "ic| 1"
 ;; => 1
@@ -30,22 +44,19 @@ Port of [gruns/icecream](https://github.com/gruns/icecream) to Clojure(Script).
 ;; "ic| 'a"
 ;; => a
 
-;; works on functions
-(ic (+ 1 1))
-;; "ic| (+ 1 1): 2"
-;; => 2
+(ic "hello")
+;; "ic| "hello""
+;; => "hello"
 
-;; works on special forms
-(ic (if true :yes :no))
-;; "ic| (if true :yes :no): :yes"
-;; => :yes
+(ic nil)
+;; "ic| nil"
+;; => nil
 
-;; works on macros
-(ic (when true :yes))
-;; "ic| (when true :yes): :yes"
-;; => :yes
+```
 
+## Configuration
 
+```clojure
 (binding [icecream/enabled false]
   (ic 1))
 ;; => 1
