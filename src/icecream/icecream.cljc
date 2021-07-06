@@ -94,7 +94,8 @@
                        (not= class "icecream.icecream$ic")
                        (not= class "icecream.icecream$get_call_context")
                        (not= ns    "clojure.lang.Compiler")
-                       (not= ns    "clojure.core"))
+                       (not= ns    "clojure.core")
+                       (not= ns    "user"))
               {:file     file
                :line     line
                :ns       ns
