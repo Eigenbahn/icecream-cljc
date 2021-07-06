@@ -8,13 +8,13 @@
 
 ;; CONF
 
-(def ^:dynamic enabled
+(def ^:dynamic *enabled*
   true)
 
-(def ^:dynamic prefix
+(def ^:dynamic *prefix*
   "ic| ")
 
-(def ^:dynamic output-function
+(def ^:dynamic *output-function*
   prn)
 
 
@@ -24,12 +24,12 @@
 (defmacro ic [form]
   (let [is-symbol (passed-symbol? form)
         do-display-expr (or is-symbol (scalar? form))
-        prfx (if (fn? prefix)
-               (prefix)
-               prefix)
+        prfx (if (fn? *prefix*)
+               (*prefix*)
+               *prefix*)
         print-expr `(let [ic-val# ~form]
-                      (when enabled
-                        (output-function
+                      (when *enabled*
+                        (*output-function*
                          (str ~prfx
                               (if ~do-display-expr
                                 (format-value ic-val#)
