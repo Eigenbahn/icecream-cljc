@@ -2,7 +2,8 @@
 
 
 (declare scalar? passed-symbol?
-         format-value)
+         format-value
+         get-call-context)
 
 
 
@@ -17,6 +18,9 @@
 (def ^:dynamic *output-function*
   prn)
 
+(def ^:dynamic *include-context*
+  true)
+
 
 
 ;; IMPL
@@ -26,11 +30,14 @@
         do-display-expr (or is-symbol (scalar? form))
         prfx (if (fn? *prefix*)
                (*prefix*)
-               *prefix*)]
+               *prefix*)
+        ctx-prfx (when *include-context*
+                   (let [{:keys [file line ns function]} (get-call-context)]
+                     (str file ":" line " in " ns "/" function "- ")))]
     `(let [ic-val# ~form]
        (when *enabled*
          (*output-function*
-          (str ~prfx
+          (str ~prfx ~ctx-prfx
                (if ~do-display-expr
                  (format-value ic-val#)
                  (str '~form ": " (format-value ic-val#))))))
@@ -67,3 +74,54 @@
     (string? v) (str "\"" v "\"")
     (symbol? v) (str "'" v)
     :else v))
+
+
+
+;; HELPERS - INTROSPECTION
+
+#?(:clj
+   (defn- get-call-context []
+     (let [stacktrace  (-> (Throwable.) .getStackTrace)]
+       (some
+        (fn [e]
+          (let [class  (.getClassName e)
+                method (.getMethodName e)
+                file   (.getFileName e)
+                line   (.getLineNumber e)
+                [ns function]     (string/split class #"\$")]
+            (when (and function
+                       (not= class "icecream.icecream$ic")
+                       (not= class "icecream.icecream$get_call_context")
+                       (not= ns    "clojure.lang.Compiler")
+                       (not= ns    "clojure.core"))
+              {:file     file
+               :line     line
+               :ns       ns
+               :function function})))
+        stacktrace)))
+
+   :cljs
+   (defn- get-call-context []
+     (let [stacktrace  (string/split (-> (js/Error.) .-stack) #"\n")]
+       (some
+        (fn [e]
+          (let [[code-location file-location] (string/split e #"@")
+                split-code-location (string/split code-location #"\$")
+                [ns function] (if (< 2 (count split-code-location))
+                                [(string/join "." (butlast split-code-location)) (last split-code-location)]
+                                [(first split-code-location) nil])
+                split-file-location (string/split file-location #":")
+                file (string/join ":" (drop-last 2 split-file-location))
+                ;; _column (last split-file-location)
+                line (last (butlast split-file-location))]
+            (when (and function
+                       (not= [ns function] ["icecream.icecream" "ic"])
+                       (not= [ns function] ["icecream.icecream" "get_call_context"]))
+              {:file     file
+               :line     line
+               :ns       ns
+               :function function})))
+        stacktrace)))
+
+   :default
+   (throw (ex-info "Platform not supported" {:ex-type :unexpected-platform})))

@@ -3,6 +3,8 @@
 </h1>
 
 
+## icecream-cljc
+
 Port of Python's [IceCream](https://github.com/gruns/icecream) to Clojure(Script).
 
 
@@ -59,6 +61,8 @@ Outputs scalars directly:
 
 ## Configuration
 
+Behaviour can be altered through the use of dynamic variables:
+
 ```clojure
 (binding [icecream/*enabled* false]
   (ic 1))
@@ -69,10 +73,16 @@ Outputs scalars directly:
 ;; "hello: 1"
 ;; => 1
 
-
 (require '[tick.alpha.api :as t])
 (binding [icecream/*prefix* #(str (inst-ms (t/now)) "| ")]
   (ic 1))
 ;; "1619103609280| 1"
 ;; => 1
 ```
+
+
+## Alternatives
+
+[Tupelo](https://github.com/cloojure/tupelo) provides [spyx](https://cljdoc.org/d/tupelo/tupelo/0.9.197/api/tupelo.core#spyx) that behaves just like `ic` when passed a S-exp.
+
+It doesn't print caller info (`include-content` config). Tupelo nethertheless provides [fn-info](https://cljdoc.org/d/tupelo/tupelo/0.9.197/api/tupelo.misc#fn-info) and [fn-info-caller](https://cljdoc.org/d/tupelo/tupelo/0.9.197/api/tupelo.misc#fn-info-caller) (Clojure only).
