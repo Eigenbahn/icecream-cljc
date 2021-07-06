@@ -66,5 +66,5 @@
   (cond
     (nil? v) "nil"
     (string? v) (str "\"" v "\"")
-    (symbol? v) (quote v)
+    (symbol? v) (str "'" v)
     :else v))
