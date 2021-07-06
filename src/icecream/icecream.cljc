@@ -26,19 +26,15 @@
         do-display-expr (or is-symbol (scalar? form))
         prfx (if (fn? *prefix*)
                (*prefix*)
-               *prefix*)
-        print-expr `(let [ic-val# ~form]
-                      (when *enabled*
-                        (*output-function*
-                         (str ~prfx
-                              (if ~do-display-expr
-                                (format-value ic-val#)
-                                (str '~form ": " (format-value ic-val#))))))
-                      ic-val#)
-        return-expr `(let [ic-val# ~form]
-                       ic-val#)]
-    `(do ~print-expr
-         ~return-expr)))
+               *prefix*)]
+    `(let [ic-val# ~form]
+       (when *enabled*
+         (*output-function*
+          (str ~prfx
+               (if ~do-display-expr
+                 (format-value ic-val#)
+                 (str '~form ": " (format-value ic-val#))))))
+       ic-val#)))
 
 
 
