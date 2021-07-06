@@ -60,18 +60,18 @@ Outputs scalars directly:
 ## Configuration
 
 ```clojure
-(binding [icecream/enabled false]
+(binding [icecream/*enabled* false]
   (ic 1))
 ;; => 1
 
-(binding [icecream/prefix "hello: "]
+(binding [icecream/*prefix* "hello: "]
   (ic 1))
 ;; "hello: 1"
 ;; => 1
 
 
 (require '[tick.alpha.api :as t])
-(binding [icecream/prefix #(str (inst-ms (t/now)) "| ")]
+(binding [icecream/*prefix* #(str (inst-ms (t/now)) "| ")]
   (ic 1))
 ;; "1619103609280| 1"
 ;; => 1
