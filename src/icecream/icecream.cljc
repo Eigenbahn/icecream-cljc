@@ -22,20 +22,23 @@
 ;; IMPL
 
 (defmacro ic [form]
-  (let [r (eval form)
-        is-symbol (passed-symbol? form)
+  (let [is-symbol (passed-symbol? form)
+        do-display-expr (or is-symbol (scalar? form))
         prfx (if (fn? prefix)
                (prefix)
-               prefix)]
-    (when enabled
-      (output-function
-       (str prfx
-            (if (or is-symbol (scalar? form))
-              (format-value r)
-              (str form ": " (format-value r))))))
-    (if is-symbol
-      form
-      r)))
+               prefix)
+        print-expr `(let [ic-val# ~form]
+                      (when enabled
+                        (output-function
+                         (str ~prfx
+                              (if ~do-display-expr
+                                (format-value ic-val#)
+                                (str ~form ": " (format-value ic-val#))))))
+                      ic-val#)
+        return-expr `(let [ic-val# ~form]
+                       ic-val#)]
+    `(do ~print-expr
+         ~return-expr)))
 
 
 
