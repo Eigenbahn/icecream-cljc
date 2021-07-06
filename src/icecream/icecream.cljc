@@ -33,7 +33,7 @@
                          (str ~prfx
                               (if ~do-display-expr
                                 (format-value ic-val#)
-                                (str ~form ": " (format-value ic-val#))))))
+                                (str '~form ": " (format-value ic-val#))))))
                       ic-val#)
         return-expr `(let [ic-val# ~form]
                        ic-val#)]
