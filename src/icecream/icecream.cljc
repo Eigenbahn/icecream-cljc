@@ -65,7 +65,7 @@
 
 ;; HELPERS - VALUE FORMAT
 
-(defn- format-value [v]
+(defn format-value [v]
   (cond
     (nil? v) "nil"
     (string? v) (str "\"" v "\"")
