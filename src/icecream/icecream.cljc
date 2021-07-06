@@ -1,4 +1,5 @@
-(ns icecream.icecream)
+(ns icecream.icecream
+  (:require [clojure.string :as string]))
 
 
 (declare scalar? passed-symbol?
