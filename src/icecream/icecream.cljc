@@ -29,11 +29,11 @@
 
 (defmacro ic [form]
   (let [is-symbol (passed-symbol? form)
-        do-display-expr (or is-symbol (scalar? form))
-        prfx (if (fn? *prefix*)
-               (*prefix*)
-               *prefix*)]
+        do-display-expr (or is-symbol (scalar? form))]
     `(let [ic-val# ~form
+           prfx# (if (fn? *prefix*)
+                   (*prefix*)
+                   *prefix*)
            call-ctx# (when icecream/*include-context*
                        (get-call-context))
            ctx-prfx# (when call-ctx#
@@ -41,7 +41,7 @@
                             " in " (:ns call-ctx#) "/" (deserialize-stacktrace-fn-name (:function call-ctx#)) "- "))]
        (when *enabled*
          (*output-function*
-          (str ~prfx ctx-prfx#
+          (str prfx# ctx-prfx#
                (if ~do-display-expr
                  (format-value ic-val#)
                  (str '~form ": " (format-value ic-val#))))))
