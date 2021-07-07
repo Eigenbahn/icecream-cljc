@@ -4,7 +4,8 @@
 
 (declare scalar? passed-symbol?
          format-value
-         get-call-context)
+         get-call-context
+         deserialize-stacktrace-fn-name)
 
 
 
@@ -37,7 +38,7 @@
                        (get-call-context))
            ctx-prfx# (when call-ctx#
                        (str (:file call-ctx#) ":" (:line call-ctx#)
-                            " in " (:ns call-ctx#) "/" (:function call-ctx#) "- "))]
+                            " in " (:ns call-ctx#) "/" (deserialize-stacktrace-fn-name (:function call-ctx#)) "- "))]
        (when *enabled*
          (*output-function*
           (str ~prfx ctx-prfx#
@@ -156,3 +157,38 @@
 
    :default
    (throw (ex-info "Platform not supported" {:ex-type :unexpected-platform})))
+
+(def DEMUNGE_VEC
+  [["_COLON_"       ":"]
+   ["_PLUS_"        "+"]
+   ["_GT_"          ">"]
+   ["_LT_"          "<"]
+   ["_EQ_"          "="]
+   ["_TILDE_"       "~"]
+   ["_BANG_"        "!"]
+   ["_CIRCA_"       "@"]
+   ["_SHARP_"       "#"]
+   ["_SINGLEQUOTE_" "'"]
+   ["_DOUBLEQUOTE_" "\\\""]
+   ["_PERCENT_"     "%"]
+   ["_CARET_"       "^"]
+   ["_AMPERSAND_"   "&"]
+   ["_STAR_"        "*"]
+   ["_BAR_"         "|"]
+   ["_LBRACE_"      "{"]
+   ["_RBRACE_"      "}"]
+   ["_LBRACK_"      "["]
+   ["_RBRACK_"      "]"]
+   ["_SLASH_"       "/"]
+   ["_BSLASH_"      "\\\\"]
+   ["_QMARK_"       "?"]
+   ["_"             "-"]])
+
+(defn deserialize-stacktrace-fn-name [fn-name]
+  (loop [in DEMUNGE_VEC
+         out fn-name]
+    (let [[s r :as curr-in] (first in)
+          rest-in (rest in)]
+      (if curr-in
+        (recur rest-in (string/replace out s r))
+        out))))
