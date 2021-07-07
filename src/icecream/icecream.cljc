@@ -31,14 +31,16 @@
         do-display-expr (or is-symbol (scalar? form))
         prfx (if (fn? *prefix*)
                (*prefix*)
-               *prefix*)
-        ctx-prfx (when *include-context*
-                   (let [{:keys [file line ns function]} (get-call-context)]
-                     (str file ":" line " in " ns "/" function "- ")))]
-    `(let [ic-val# ~form]
+               *prefix*)]
+    `(let [ic-val# ~form
+           call-ctx# (when icecream/*include-context*
+                       (get-call-context))
+           ctx-prfx# (when call-ctx#
+                       (str (:file call-ctx#) ":" (:line call-ctx#)
+                            " in " (:ns call-ctx#) "/" (:function call-ctx#) "- "))]
        (when *enabled*
          (*output-function*
-          (str ~prfx ~ctx-prfx
+          (str ~prfx ctx-prfx#
                (if ~do-display-expr
                  (format-value ic-val#)
                  (str '~form ": " (format-value ic-val#))))))
