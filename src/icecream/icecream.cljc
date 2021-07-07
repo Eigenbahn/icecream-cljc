@@ -100,6 +100,7 @@
            line   (.getLineNumber e)
            [ns function]     (string/split class #"\$")]
        (when (and function
+                  (not= class "icecream.icecream$ic_prefix")
                   (not= class "icecream.icecream$ic")
                   (not= class "icecream.icecream$get_call_context")
                   (not= ns    "clojure.lang.Compiler")
@@ -124,6 +125,7 @@
            ;; _column (last split-file-location)
            line (last (butlast split-file-location))]
        (when (and function
+                  (not= [ns function] ["icecream.icecream" "ic_prefix"])
                   (not= [ns function] ["icecream.icecream" "ic"])
                   (not= [ns function] ["icecream.icecream" "get_call_context"]))
          {:file     file
