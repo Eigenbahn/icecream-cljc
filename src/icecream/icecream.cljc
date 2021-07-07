@@ -21,7 +21,8 @@
   prn)
 
 (def ^:dynamic *include-context*
-  true)
+  "Either `true` (systematic), `false` (never) or `:smart` (only when in function calls)."
+  :smart)
 
 
 
@@ -29,32 +30,38 @@
 
 (defmacro ic
   ([]
-   `(let [ic-prefix# (ic-prefix)]
+   `(let [ic-prefix# (binding [*include-context* true] (ic-prefix))]
       (when *enabled*
         (*output-function* ic-prefix#))))
   ([form]
    (let [is-symbol (passed-symbol? form)
          do-display-expr (or is-symbol (scalar? form))]
      `(let [ic-val# ~form
-            ic-prefix# (ic-prefix)]
+            ic-prefix# (ic-prefix true)]
         (when *enabled*
           (*output-function*
-           (str ic-prefix# "- "
+           (str ic-prefix#
                 (if ~do-display-expr
                   (format-value ic-val#)
                   (str '~form ": " (format-value ic-val#))))))
         ic-val#))))
 
-(defn ic-prefix []
+(defn ic-prefix [& with-expr-delimiter]
   (let [prfx (if (fn? *prefix*)
                (*prefix*)
                *prefix*)
         call-ctx (when *include-context*
                    (get-call-context))
         ctx-prfx (when-let [{:keys [file line ns function]} call-ctx]
-                   (str file ":" line
-                        " in " ns "/" (deserialize-stacktrace-fn-name function)))]
-    (str prfx ctx-prfx)))
+                   (when-not (and (re-matches #"^eval\d+$" function)
+                                  (= :smart *include-context*))
+                     (str file ":" line
+                          " in " ns "/" (deserialize-stacktrace-fn-name function)))
+                   )]
+    (str prfx ctx-prfx
+         (when (and with-expr-delimiter
+                    (not (string/blank? ctx-prfx)))
+           "- "))))
 
 
 
