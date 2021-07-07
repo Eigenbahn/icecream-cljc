@@ -3,7 +3,7 @@
 
 
 (declare scalar? passed-symbol?
-         format-value
+         ic-prefix format-value
          get-call-context
          deserialize-stacktrace-fn-name)
 
@@ -27,25 +27,34 @@
 
 ;; IMPL
 
-(defmacro ic [form]
-  (let [is-symbol (passed-symbol? form)
-        do-display-expr (or is-symbol (scalar? form))]
-    `(let [ic-val# ~form
-           prfx# (if (fn? *prefix*)
-                   (*prefix*)
-                   *prefix*)
-           call-ctx# (when icecream/*include-context*
-                       (get-call-context))
-           ctx-prfx# (when call-ctx#
-                       (str (:file call-ctx#) ":" (:line call-ctx#)
-                            " in " (:ns call-ctx#) "/" (deserialize-stacktrace-fn-name (:function call-ctx#)) "- "))]
-       (when *enabled*
-         (*output-function*
-          (str prfx# ctx-prfx#
-               (if ~do-display-expr
-                 (format-value ic-val#)
-                 (str '~form ": " (format-value ic-val#))))))
-       ic-val#)))
+(defmacro ic
+  ([]
+   `(let [ic-prefix# (ic-prefix)]
+      (when *enabled*
+        (*output-function* ic-prefix#))))
+  ([form]
+   (let [is-symbol (passed-symbol? form)
+         do-display-expr (or is-symbol (scalar? form))]
+     `(let [ic-val# ~form
+            ic-prefix# (ic-prefix)]
+        (when *enabled*
+          (*output-function*
+           (str ic-prefix# "- "
+                (if ~do-display-expr
+                  (format-value ic-val#)
+                  (str '~form ": " (format-value ic-val#))))))
+        ic-val#))))
+
+(defn ic-prefix []
+  (let [prfx (if (fn? *prefix*)
+               (*prefix*)
+               *prefix*)
+        call-ctx (when *include-context*
+                   (get-call-context))
+        ctx-prfx (when-let [{:keys [file line ns function]} call-ctx]
+                   (str file ":" line
+                        " in " ns "/" (deserialize-stacktrace-fn-name function)))]
+    (str prfx ctx-prfx)))
 
 
 
