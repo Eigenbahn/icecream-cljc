@@ -69,6 +69,14 @@ Behaviour can be altered through the use of dynamic variables:
   (ic 1))
 ;; => 1
 
+;; custom output function
+(require '[taoensso.timbre :as timbre
+           :refer [debug]])
+(binding [icecream/*output-function* #(debug %)]
+  (ic 1))
+;; 21-07-07 20:01:03 homebase DEBUG [icecream-test.core:131] - ic| 1
+;; => 1
+
 ;; custom prefix - constant
 (binding [icecream/*prefix* "hello: "]
   (ic 1))
