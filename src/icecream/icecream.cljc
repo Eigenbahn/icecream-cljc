@@ -24,6 +24,12 @@
   "Either `true` (systematic), `false` (never) or `:smart` (only when in function calls)."
   :smart)
 
+(def ^:dynamic *include-file-location-in-context*
+  "Disables file and line number to show up in context prefix (case `*include-context*` is `true` or `:smart`).
+
+  Useful to disable it when using `*output-function*` that already does it (e.g. `taoensso.timbre/log!` and derivatives)."
+  true)
+
 
 
 ;; IMPL
@@ -55,8 +61,8 @@
         ctx-prfx (when-let [{:keys [file line ns function]} call-ctx]
                    (when-not (and (re-matches #"^eval\d+$" function)
                                   (= :smart *include-context*))
-                     (str file ":" line
-                          " in " ns "/" (deserialize-stacktrace-fn-name function)))
+                     (str (when *include-file-location-in-context* (str file ":" line " in "))
+                          ns "/" (deserialize-stacktrace-fn-name function)))
                    )]
     (str prfx ctx-prfx
          (when (and with-expr-delimiter

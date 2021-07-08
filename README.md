@@ -72,7 +72,9 @@ Behaviour can be altered through the use of dynamic variables:
 ;; custom output function
 (require '[taoensso.timbre :as timbre
            :refer [debug]])
-(binding [icecream/*output-function* #(debug %)]
+(binding [icecream/*output-function* #(debug %)
+          ;; NB: you typically want this one as well, explained later
+          icecream/*include-file-location-in-context* false]
   (ic 1))
 ;; 21-07-07 20:01:03 homebase DEBUG [icecream-test.core:131] - ic| 1
 ;; => 1
@@ -96,6 +98,14 @@ Behaviour can be altered through the use of dynamic variables:
 ;; "ic| form-init4003934083635828251.clj:6 in icecream-test.core/eval51124- 1
 ;; => 1
 
+;; same but don't include file name / line number
+(binding [icecream/*include-context* true
+          icecream/*include-file-location-in-context* false]
+  (test 1))
+;; "ic| icecream-test.core/eval51124- 1
+;; => 1
+
+
 ;; smartly include call context (only when inside function calls)
 (binding [icecream/*include-context* :smart]
   (ic 1))
@@ -118,6 +128,11 @@ Behaviour can be altered through the use of dynamic variables:
 ;; "ic| form-init4003934083635828251.clj:6 in icecream-test.core/eval51125
 ;; => nil
 ```
+
+
+## Limitations
+
+Introspection (when `*include-context*` is `true` or `:smart`) won't work in some cases. Typically in multi-methods or when calling dynamically created lambda functions.
 
 
 ## Alternatives
