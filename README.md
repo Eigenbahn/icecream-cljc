@@ -34,7 +34,7 @@ Works on functions, special forms and macros:
 ;; => :yes
 ```
 
-Outputs scalars directly:
+Smartly outputs scalars directly:
 
 ```clojure
 (ic 1)
@@ -61,7 +61,7 @@ Outputs scalars directly:
 
 ## Configuration
 
-Behaviour can be altered through the use of dynamic variables:
+Behavior can be altered through the use of dynamic variables:
 
 ```clojure
 ;; disable
@@ -137,6 +137,30 @@ Introspection (when `*include-context*` is `true` or `:smart`) won't work in som
 
 ## Alternatives
 
-[Tupelo](https://github.com/cloojure/tupelo) provides [spyx](https://cljdoc.org/d/tupelo/tupelo/0.9.197/api/tupelo.core#spyx) that behaves very close to `ic` but for which the output function (`println`) can't be redefined.
+#### tap
 
-It doesn't print caller info (`*include-context*` config). Tupelo nethertheless provides [fn-info](https://cljdoc.org/d/tupelo/tupelo/0.9.197/api/tupelo.misc#fn-info) and [fn-info-caller](https://cljdoc.org/d/tupelo/tupelo/0.9.197/api/tupelo.misc#fn-info-caller) (Clojure only).
+You might want to take a look at the native [tap](https://clojure.org/reference/repl_and_main#_tap) API.
+
+This [blog post](https://quanttype.net/posts/2018-10-18-how-i-use-tap.html) describe how it can be used for debugging purposes.
+
+It allows binding several print destinations (akin to iceream's `*output-function*` config). This way you could both log in the REPL and forward say [portal](https://github.com/djblue/portal).
+
+One notable difference is that `tap>` doesn't return the evaluated form value, but instead a boolean indicating if the action to output succeeded. As such it cannot be inserted as easily as other solutions (inside function calls, threading macros...).
+
+Have also a look at the convenient [pez/taplet](https://github.com/PEZ/taplet) that allows quickly tapping a whole let-binding vector.
+
+
+#### spyscope
+
+[spyscope](https://github.com/dgrnbrg/spyscope) provides several utilities similar to icecream but in the form of reader tags instead of macros.
+
+Notably `#spy/d` is very close in behavior to `ic`, including context resolution.
+
+Its output function cannot be customized.
+
+
+#### tupelo's spyx
+
+[tupelo](https://github.com/cloojure/tupelo) provides [spyx](https://cljdoc.org/d/tupelo/tupelo/0.9.197/api/tupelo.core#spyx) that behaves very close to `ic` but for which the output function (`println`) can't be redefined.
+
+It doesn't print caller info (`*include-context*` config). tupelo nethertheless provides [fn-info](https://cljdoc.org/d/tupelo/tupelo/0.9.197/api/tupelo.misc#fn-info) and [fn-info-caller](https://cljdoc.org/d/tupelo/tupelo/0.9.197/api/tupelo.misc#fn-info-caller) (both Clojure only) that is very close in implementation to icecream's `get-call-context`.
