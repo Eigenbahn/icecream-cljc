@@ -154,7 +154,9 @@ Have also a look at the convenient [pez/taplet](https://github.com/PEZ/taplet) t
 
 [spyscope](https://github.com/dgrnbrg/spyscope) provides several utilities similar to icecream but in the form of reader tags instead of macros.
 
-Notably `#spy/d` is very close in behavior to `ic`, including context resolution.
+Notably `#spy/d` ("details") is very close in behavior to `ic`, including context resolution.
+
+It also provides `#spy/t` ("trace") that is an aggregated asynchronous version better suited for multi-threaded applications.
 
 Its output function cannot be customized.
 
