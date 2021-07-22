@@ -5,6 +5,8 @@
 
 ## icecream-cljc
 
+[![Clojars Project](https://img.shields.io/clojars/v/com.eigenbahn/icecream.svg)](https://clojars.org/com.eigenbahn/icecream)
+
 Port of Python's [IceCream](https://github.com/gruns/icecream) to Clojure(Script).
 
 
