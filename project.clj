@@ -1,4 +1,4 @@
-(defproject eigenbahn/icecream "0.1.0"
+(defproject com.eigenbahn/icecream "0.1.0"
   :description "Port of icrecream to Clojure(Script)."
   :url "https://github.com/Eigenbahn/icecream-cljc"
   :license {:name "The MIT License"
