@@ -168,3 +168,8 @@ Its output function cannot be customized.
 [tupelo](https://github.com/cloojure/tupelo) provides [spyx](https://cljdoc.org/d/tupelo/tupelo/0.9.197/api/tupelo.core#spyx) that behaves very close to `ic` but for which the output function (`println`) can't be redefined.
 
 It doesn't print caller info (`*include-context*` config). tupelo nethertheless provides [fn-info](https://cljdoc.org/d/tupelo/tupelo/0.9.197/api/tupelo.misc#fn-info) and [fn-info-caller](https://cljdoc.org/d/tupelo/tupelo/0.9.197/api/tupelo.misc#fn-info-caller) (both Clojure only) that is very close in implementation to icecream's `get-call-context`.
+
+
+#### hashp
+
+[hashp](https://github.com/weavejester/hashp) works just like spyscope's `#spy/p` but includes partial context (call location in file).
